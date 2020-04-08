@@ -1,0 +1,326 @@
+\documentclass[a4paper,12pt]{article}
+\pagestyle{empty}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{cmap}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{units}
+\usepackage{fancyhdr}
+\usepackage{forloop}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{pifont}
+\usepackage{graphicx}
+\usepackage{subfig}
+\definecolor{urlcolor}{HTML}{0645AD}
+\hypersetup{pdfstartview=FitH, linkcolor=black,urlcolor=urlcolor, colorlinks=true}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\usepackage{tikz}
+
+\usepackage{verbatim}
+\usetikzlibrary{arrows,shapes}
+
+\theoremstyle{definition}
+
+\newtheorem{theorem}{Теорема}
+\newtheorem{lemma}{Лемма}
+\newtheorem{definition}{Определение}
+\newtheorem{corollary}{Следствие}
+\newtheorem{example}{Пример}
+\newtheorem{remark}{Замечание}
+\newtheorem{exercise}{Упражнение}
+
+\renewcommand{\thesection}{\arabic{section}}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\fancyhead[RO]{\bfseries \rightmark}
+\fancyhead[LE]{\bfseries \rightmark}
+\fancyhead[LO, RE]{Методы оптимизации в машинном обучении}
+\fancyfoot[L]{MADE 2020}
+%For multipage documents only!
+\fancyhead[R]{Страница \thepage}
+%Uncomment this for 1-page sheets
+\fancyfoot[R]{}
+\fancyfoot[C]{}
+
+\pagestyle{fancy}
+
+\renewcommand{\baselinestretch}{1.0}
+\renewcommand\normalsize{\sloppypar}
+
+\setlength{\topmargin}{-0.1in}
+\setlength{\textheight}{9.1in}
+\setlength{\oddsidemargin}{-0.3in}
+\setlength{\evensidemargin}{-0.3in}
+\setlength{\textwidth}{7in}
+\setlength{\parindent}{0ex}
+\setlength{\parskip}{1ex}
+
+\newenvironment{comm}{}{}
+
+\newcounter{problemset}
+\newcounter{totalpages}
+%Here you should set the total number of pages
+\setcounter{totalpages}{1}
+
+\def \topic {Домашнее задание №1. \\Введение/Выпуклые множества/Выпуклые функции. \\
+Векторное дифференцирование.}
+
+\def \ZZ {\mathbb Z}
+\def \FF {\mathbb F}
+%\def \RR {\mathbb R}
+\def \QQ {\mathbb Q}
+\def \NN {\mathbb N}
+\def \PP {\mathbb P}
+\def \EE {\mathbb E}
+\def \DD {\mathbb D}
+\def \CC {\mathbb C}
+
+\def\cA{{\cal A}}
+\def\cB{{\cal B}}
+\def\cD{{\cal D}}
+\def\cC{{\cal C}}
+\def\cQ{{\cal Q}}
+%\def\R{{\cal R}}
+\def\cM{{\cal M}}
+\def\cN{{\cal N}}
+\def\cT{{\cal T}}
+\def\cP{{\cal P}}
+\def\cF{{\cal F}}
+
+\def\cE{{\mathcal{E}}}
+
+\def\poly{{\text{poly}}}
+
+\newcommand{\argmin}{\mathop{\arg\!\min}}
+\newcommand{\circledOne}{\text{\ding{172}}}
+\newcommand{\circledTwo}{\text{\ding{173}}}
+\newcommand{\circledThree}{\text{\ding{174}}}
+\newcommand{\circledFour}{\text{\ding{175}}}
+\newcommand{\circledFive}{\text{\ding{176}}}
+\newcommand{\circledSix}{\text{\ding{177}}}
+\newcommand{\circledSeven}{\text{\ding{178}}}
+\newcommand{\circledEight}{\text{\ding{179}}}
+\newcommand{\circledNine}{\text{\ding{180}}}
+\newcommand{\circledTen}{\text{\ding{181}}}
+
+%PROBABILITY_TH
+\newcommand{\cov}{\text{cov}}
+
+%DISTRIBUTIONS
+\newcommand{\Be}{\text{Be}}
+\newcommand{\Binom}{\text{Binom}}
+\newcommand{\Poisson}{\text{Poisson}}
+\newcommand{\Geo}{\text{Geom}}
+\newcommand{\NegBinom}{\text{NB}}
+\newcommand{\Uniform}{{\mathcal{U}}}
+\newcommand{\Normal}{{\mathcal{N}}}
+\newcommand{\Exp}{\text{Exp}}
+\newcommand{\Ca}{\text{Ca}}
+\newcommand{\GammaDistr}{\text{Gamma}}
+\newcommand{\ChiSquared}{\chi^2}
+\newcommand{\BetaDistr}{\text{Beta}}
+\newcommand{\LogNormal}{\log\Normal}
+
+%GRAPHS
+\newcommand{\rank}{\text{rank}}
+\newcommand{\size}{\text{size}}
+
+%ARRAYS
+\newcommand{\length}{\text{length}}
+\newcommand{\heapsize}{\text{heap-size}}
+
+%DFT
+\newcommand{\DFT}{\text{DFT}}
+\newcommand{\FFT}{\text{FFT}}
+
+%NUMBER THEORY
+\newcommand{\GCD}[2]{\text{НОД}\left(#1, #2\right)}
+\newcommand{\ord}[1]{\text{ord}\left(#1\right)}
+\newcommand{\ind}[3]{\text{ind}_{#1, #2}\left(#3\right)}
+\newcommand{\legandre}[2]{\left(\frac{#1}{#2}\right)}
+
+%COMPLEXITY CLASSES
+\def\DTIME{{\cal{D}\text{TIME}}}
+\def\P{{\cal{P}}}
+\def\EXPTIME{{\text{EXPTIME}}}
+\def\NTIME{{\cal{N}\text{TIME}}}
+\def\NP{{\cal{N}\cal{P}}}
+\def\NEXPTIME{{\cal{N}\text{EXPTIME}}}
+\def\coNP{{\text{co-}\cal{N}\cal{P}}}
+\def\NPcomplete{{\cal{N}\cal{P}}\text{-complete}}
+\def\NPhard{{\cal{N}\cal{P}}\text{-hard}}
+
+%PD custom commands
+\def\tnf{\widetilde{\nabla}f}
+\def\tnmf{\widetilde{\nabla}^m f}
+\newcommand{\la}{\langle}
+\newcommand{\ra}{\rangle}
+\def\e{\varepsilon}
+
+\def\eqdef{\overset{\text{def}}{=}}
+
+\def \R {\mathbb R}
+
+\begin{document}
+
+\forloop{example}{0}{\value{example} < \value{totalpages}}
+
+
+\begin{center}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\HRule \\[0.2cm]
+{ \Large \bfseries \topic} %\\[0.2cm]
+\HRule
+
+\end{center}
+
+\begin{flushleft}
+	\textbf{ВВЕДЕНИЕ (3 балла)} 
+\end{flushleft}
+
+\begin{enumerate}
+    \item Для успешного выступления на соревнованиях спортсмен должен потратить как минимум $\mathrm{K}$ килокалорий. Вечером перед соревнованиями он идёт в магазин, чтобы купить продукты себе на ужин. В магазине представлено m наименований товаров, цена единицы каждого наименования равна $p_i$, $i = 1, . . . , m$. Также известно, что $i$-ая единица каждого товара придаёт студенту энергию равную $k_i$ килокалорий. Поставьте задачу определения содержимого корзины минимальной стоимости для успешного выступления. Является ли поставленная задача выпуклой и почему?
+    
+    \item Что такое норма вектора? Что такое эквивалентность норм? Показать эквивалентность $l_1,l_2, l_{\infty}$ норм.
+    
+    \item Что такое норма матрицы (линейного конечномерного оператора)? Чему равны $\mathrm{L}_1, \mathrm{L}_2,
+    \mathrm{L}_{\infty}$ нормы матрицы? Что такое Фробениусова норма матрицы и какой аналог среди векторных норм векторов она имеет?
+\end{enumerate}
+
+\begin{flushleft}
+	\textbf{ВЫПУКЛЫЕ/КОНИЧЕСКИЕ МНОЖЕСТВА (2 балла)}
+
+	\begin{enumerate}
+          \item Доказать по определению, что гиперболическое множество
+            \[ \left\{x \in \mathbb{R}^n_+ \ \bigg| \ \prod^{n}_{i=1}x_i \geq 1\right\} \text{-- выпуклое.}\]
+  
+  \item Пусть $\mathrm{P} \in \mathbb{S}^n_{++}$, $c \in \R^n$. Покажите, что множество \[\left\{ x \in \R^n \ | \ \langle \mathrm{P} x, x \rangle \leq \langle c, x \rangle^2, \ \langle c, x \rangle \geq 0 \right\}\text{-- выпуклое.}\] 
+  
+  
+\end{enumerate}
+\end{flushleft}
+
+\begin{flushleft}
+	\textbf{ВЫПУКЛЫЕ ФУНКЦИИ (2 балла)}
+\end{flushleft}	
+\begin{enumerate}
+    \item 
+	Докажите выпуклость следующих функций:
+\begin{enumerate}
+    \item $f(x) = \left(\sum\limits_{i=1}^n e^{x_i} \right)$;
+    \item $f(x) = \frac{\|\mathrm{A}x-b\|^2}{1 - x^{\top}x}, \ \mathrm{X} = \{x \ | \ \|x\|^2 \leq 1\}$;
+    \item $F(x) = \frac{f^2(x)}{g(x)}$ при условии, что $f(x)$ является выпуклой и принимает только неотрицательные значения, $g(x)$ вогнута и принимает только положительные значения;
+    \item $f(x,t) = - \log (t^2 - x^Tx), \ \mathrm{E} = \{(x,t)\} \in \R^{n \times 1} \ | \ \|x\|_2<t \}$;
+    \item $f(x) = \sum\limits_{i=1}^n w_i \ln \left( 1 + \exp (a_i^{\top} x)\right) + \frac{\mu}{2} \|x\|_2^2, \; \ \mu, w_1, \dots, w_n > 0, \;  a_i \in \mathbb{R}^n$;
+    \item $f(x) = \ln \sum\limits_{i=1}^n \exp \left( \max \{0, x_i \}^2\right)$.
+\end{enumerate}
+
+\end{enumerate}
+
+\begin{flushleft}
+	\textbf{ТЕСТ/ВЫПУКЛЫЕ ФУНКЦИИ (2 балла)}
+\end{flushleft}	
+
+
+\begin{enumerate}
+\item Какое максимальное количество точек минимума может быть у выпуклой функции? 
+\begin{enumerate}
+    \item Одна
+    \item Две
+    \item Счётное множество
+    \item Несчётное множество
+\end{enumerate} 
+
+\item Какие из следующих функций выпуклы? 
+\begin{enumerate}
+    \item $f(x) = \sum_{i=1}^r x_{[i]}$, где $x_{[1]} \geq x_{[1]} \geq \ldots \geq x_{[n]}$~--- упорядоченные по убыванию элементы вектора $x$
+    \item $f(x) = x^5$
+    \item $f(x) = \sum_{i=1}^n x_i \log x_i$, где $x_i \geq 0$ и $f(0) = 0$ по непрерывности
+    \item $f(A) = x^{\top}Ax$, где $A \in \mathbb{R}^{n \times n}$, $x \in \mathbb{R}^n$~--- фиксированный вектор
+    \item $\|x\|_{1/3} = (\sum_{i=1}^n |x_i|^{1/3})^3$
+\end{enumerate}
+
+\item Чем является касательная к графику выпуклой функции в каждой точке области определения?
+\begin{enumerate}
+\item Локальной оценкой сверху
+\item Глобальной оценкой снизу
+\item Локальной оценкой снизу
+\item Глобальной оценкой сверху
+\end{enumerate}
+
+\item На каком множестве выпукла функция $f =  x^3_2 + x_2(x^2_1 + x^2_3)$?
+\begin{enumerate}
+\item $\{ (x_1, x_2, x_3) \; | \; x_1 \geq 0, \; x_2 \geq 0, \; x_3 \geq 0 \}$
+\item $\{ (x_1, x_2, x_3)\; | \; x_2 \leq 0, \; 3x_2^2 - x_1^2 \geq 0 \}$
+\item $\{ (x_1, x_2, x_3)\; | \; x_2 \geq 0, \; 3x_2^2 - x_1^2 \geq x_3^2 \}$
+\item $\{ (x_1, x_2, x_3) \; | \; x_2 \geq 0, \; 6x_2^2 - x_1^2 \geq 0 \}$
+\end{enumerate}
+
+\item Может ли область определения выпуклой функции быть невыпуклым множеством?
+ \begin{enumerate}
+\item Да
+\item Нет
+\end{enumerate}
+
+\item Отметьте все композиции $f(x) = h(g(x))$, такие что $f(x)$~--- выпуклая функция.
+\begin{enumerate}
+\item $h(x) = \log x$, $g(x)$~-- выпуклая функция
+\item $h(x) = e^x$, $g(x)$~-- вогнутая функция
+\item $g(x) = Ax + b$ для некоторой матрицы $A$ и вектора $b$, $h$~-- выпуклая функция
+\item $h(x) = |x - 4|$, $g(x) = |x|$
+\end{enumerate}
+
+\item Чему равна константа сильной выпуклости у функции $f(x) = \frac12\|x\|_2^2$? 
+\begin{enumerate}
+\item 1
+\item 2
+\item 3
+\item 10
+\end{enumerate}
+\end{enumerate}
+
+\begin{flushleft}
+	\textbf{ТЕСТ/ВЕКТОРНОЕ ДИФФЕРЕНЦИРОВАНИЕ (2 балла)}
+\end{flushleft}	
+
+
+\begin{enumerate}
+\item 
+Посчитайте $df(x)$ и $\nabla f(x)$ для функции $f(x) = \log(x^{\top}\mathrm{A}x)$ и выберите правильный вариант ответа.
+    \begin{enumerate}
+    \item $\nabla f(x) = \frac{2\left(\mathrm{A}+ \mathrm{A}^{\top} \right)x}{x^{\top}\mathrm{A}x}, \; df(x) = \frac{x^{\top}2\left(\mathrm{A}+ \mathrm{A}^{\top} \right)dx}{x^{\top}\mathrm{A}x}$
+    \item $\nabla f(x) = \frac{\left(\mathrm{A}+ \mathrm{A}^{\top} \right)x}{x^{\top}\mathrm{A}x}, \; df(x) = \frac{x^{\top}\left(\mathrm{A}+ \mathrm{A}^{\top} \right)dx}{x^{\top}\mathrm{A}x}$
+    \item $\nabla f(x) = \frac{x^{\top}\left(\mathrm{A}+ \mathrm{A}^{\top} \right)dx}{x^{\top}\mathrm{A}x}, \; d f(x) = \frac{\left(\mathrm{A}+ \mathrm{A}^{\top} \right)x}{x^{\top}\mathrm{A}x}$
+    \item $\nabla f(x) = \frac{x^{\top}2\left(\mathrm{A}+ \mathrm{A}^{\top} \right)dx}{x^{\top}\mathrm{A}x}, \; d f(x) = \frac{2\left(\mathrm{A}+ \mathrm{A}^{\top} \right)x}{x^{\top}\mathrm{A}x}$
+    \end{enumerate}
+    
+\item Посчитайте $df(x), \; d^2f(x)$ и $\nabla f(x), \; \nabla^2 f(x)$ для функции $f(x) = \frac1p \|x\|^p_2, \; p>1$ и выберите все правильные результаты.
+    \begin{enumerate}
+    \item $\nabla f(x) = \|x\|_2^{p-1}x$
+    \item $df(x) = \|x\|_2^{p-2} x^{\top}dx$
+    \item $\nabla^2 f(x) =  (p-2) \|x\|_2^{p-4}x^{\top}x + \|x\|_2^{p-2} $
+    \item $\nabla^2 f(x) =  (p-1) \|x\|_2^{p-3}xx^{\top} + \|x\|_2^{p-1} I$
+    \item $d^2f(x) = dx^{\top} \left( (p-2) \|x\|_2^{p-4}xx^{\top} + \|x\|_2^{p-2} I\right) dx$
+    \item $d^2f(x) = dx^{\top} \left( (p-1) \|x\|_2^{p-3}xx^{\top} + \|x\|_2^{p-1} I\right) dx$
+    \end{enumerate}
+    
+\item Верно ли, что у функции 
+$f(x) = \frac1n \sum\limits_{i=1}^n \log \left( 1 + \exp(a_i^{\top}x)  \right) + \frac{\mu}{2}\|x\|_2^2, \; a_i \in \mathbb R^n, \; \mu>0, \;$ гессиан $\nabla^2 f(x) = \frac1n \sum\limits_{i=1}^n \left( -\frac{\exp(a_i^{\top}x)}{(1 + \exp(a_i^{\top}x))^2}a_ia_i^{\top} + \frac{\exp(a_i^{\top}x)}{1 + \exp(a_i^{\top}x)}a_ia_i^{\top}\right) + \mu \mathrm{I}$?
+\begin{enumerate}
+\item Да
+\item Нет
+\end{enumerate}
+\end{enumerate}
+
+\end{document}
