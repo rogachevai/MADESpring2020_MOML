@@ -720,7 +720,7 @@ def svrg(filename, x_init, A, y, gamma,
     
     #метод
     for s in range(S):
-        # вставьте ваш код здесь
+        grad = logreg_grad(x,A,y)# вставьте ваш код здесь
         
         for it in range(M):
             #если закончились индексы, то нужно ещё насэмплировать
