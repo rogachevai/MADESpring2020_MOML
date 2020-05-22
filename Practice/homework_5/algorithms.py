@@ -444,11 +444,32 @@ def sgd_decr_stepsize(filename, x_init, A, y, gamma_schedule,
         A_for_batch = A.toarray()
     
     indices_counter = 0
-    
+
+    w = x
+
+    c = 1
+
+    d = 0
     #метод
     for it in range(int(S*m/batch_size)):
-        
-        #ваш код здесь
+
+        if d >= decr_period*c:
+            gamma = gamma*decr_coeff
+            c += 1
+
+        if indices_counter == indices_size:
+            indices_counter = 0
+            indices = randint.rvs(low=0, high=m, size=indices_size)
+        batch_ind = indices[indices_counter:(indices_counter + batch_size)]
+        indices_counter += batch_size
+
+        d += batch_size/m
+
+
+        g_k = logreg_grad(x, args=[A_for_batch[batch_ind], y[batch_ind], l2, sparse_stoch])
+        x = prox_R(x - gamma * g_k, gamma * l1)
+
+        num_of_data_passes += 2.0 * batch_size / m
         
         if ((it + 1) % save_info_period == 0):
             its = np.append(its, it + 1)
@@ -458,7 +479,8 @@ def sgd_decr_stepsize(filename, x_init, A, y, gamma_schedule,
             sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
         if tim[-1] > max_t:
             break
-    
+        w = deepcopy(x)
+
     if ((it + 1) % save_info_period != 0):
         its = np.append(its, it + 1)
         tim = np.append(tim, time.time() - t_start)
@@ -510,22 +532,28 @@ def sgd_const_stepsize(filename, x_init, A, y, gamma,
     
     indices_counter = 0
     
-    #метод
+    w = x
     for it in range(int(S*m/batch_size)):
         if indices_counter == indices_size:
             indices_counter = 0
             indices = randint.rvs(low=0, high=m, size=indices_size)
-            
-        #ваш код здесь
-        
+        batch_ind = indices[indices_counter:(indices_counter + batch_size)]
+        indices_counter += batch_size
+
+        g_k = logreg_grad(x, args=[A_for_batch[batch_ind], y[batch_ind], l2, sparse_stoch])
+        x = prox_R(x - gamma * g_k, gamma * l1)
+
+        num_of_data_passes += 2.0 * batch_size / m
+
         if ((it + 1) % save_info_period == 0):
-            its = np.append(its, it + 1)
-            tim = np.append(tim, time.time() - t_start)
-            data_passes = np.append(data_passes, num_of_data_passes)
-            func_val = np.append(func_val, F(x, [A, y, l2, sparse_full, l1])-f_star)
-            sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
+                its = np.append(its, it + 1)
+                tim = np.append(tim, time.time() - t_start)
+                data_passes = np.append(data_passes, num_of_data_passes)
+                func_val = np.append(func_val, F(x, [A, y, l2, sparse_full, l1])-f_star)
+                sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
         if tim[-1] > max_t:
             break
+        w = deepcopy(x)
     
     if ((it + 1) % save_info_period != 0):
         its = np.append(its, it + 1)
@@ -646,17 +674,30 @@ def l_svrg(filename, x_init, A, y, gamma,
     
     indices_counter = 0  
     bernoulli_counter = 0 #нужен для того, чтобы проходить массив bernoulli_exp
-    
+    w = x
     #метод
     for it in range(int(m*S/batch_size)):
+        grad_w = logreg_grad(w, args=[A_for_batch, y, l2, sparse_full])
+        num_of_data_passes += 1
         if indices_counter == indices_size:
             indices_counter = 0
             indices = randint.rvs(low=0, high=m, size=indices_size)
         if bernoulli_counter == bernoulli_exp_size:
             bernoulli_counter = 0
             bernoulli_exp = bernoulli.rvs(p, size=bernoulli_exp_size)
-        
+        batch_ind = indices[indices_counter:(indices_counter + batch_size)]
+        indices_counter += batch_size
+        bernoulli_ind = bernoulli_exp[bernoulli_counter:(bernoulli_counter + batch_size)]
+        bernoulli_counter += batch_size
         #ваш код здесь (возможно, ещё где-то придётся вставить код)
+        g_k = logreg_grad(x, args=[A_for_batch[batch_ind], y[batch_ind], l2, sparse_stoch]) - logreg_grad(w, args=[
+            A_for_batch[batch_ind], y[batch_ind],
+            l2, sparse_stoch]) + grad_w
+        w[bernoulli_ind] = x[bernoulli_ind]
+        x = prox_R(x - gamma * g_k, gamma * l1)
+        # w[bernoulli_ind] = x[bernoulli_ind]
+
+        num_of_data_passes += 2.0 * batch_size / m
         
         if ((it + 1) % save_info_period == 0):
             its = np.append(its, it + 1)
@@ -719,9 +760,10 @@ def svrg(filename, x_init, A, y, gamma,
     indices_counter = 0 #нужен для того, чтобы проходить массив индексов indices
     
     #метод
+    w = x
     for s in range(S):
-        grad = logreg_grad(x,A,y)# вставьте ваш код здесь
-        
+        grad_w = logreg_grad(w,args=[A_for_batch,y,l2,sparse_full])
+        num_of_data_passes += 1
         for it in range(M):
             #если закончились индексы, то нужно ещё насэмплировать
             if indices_counter == indices_size:
@@ -731,6 +773,9 @@ def svrg(filename, x_init, A, y, gamma,
             indices_counter += batch_size
             
             #ваш код здесь
+            g_k = logreg_grad(x, args=[A_for_batch[batch_ind], y[batch_ind], l2,sparse_stoch]) - logreg_grad(w,args=[A_for_batch[batch_ind], y[batch_ind],
+                                                                               l2,sparse_stoch]) + grad_w
+            x = prox_R(x - gamma * g_k, gamma * l1)
             
             num_of_data_passes += 2.0*batch_size/m
             if ((s * M + it + 1) % save_info_period == 0):
@@ -741,6 +786,7 @@ def svrg(filename, x_init, A, y, gamma,
                 sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
         if tim[-1] > max_t:
             break
+        w = deepcopy(x)
     
     if ((s * M + it + 1) % save_info_period != 0):
         its = np.append(its, s * M + it + 1)

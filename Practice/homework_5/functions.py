@@ -55,6 +55,25 @@ def logreg_grad(x, args):
     assert len(loss_grad) == len(x)
     return loss_grad + mu * x
 
+
+def lr_grad(x, A,y,mu,sparse=False):
+    # A = args[0]
+    # y = args[1]
+    # mu = args[2]
+    # sparse = args[3]
+    assert mu >= 0
+    assert len(y) == A.shape[0]
+    assert len(x) == A.shape[1]
+    if sparse == True:
+        degree = -y * (A * x)
+        sigmas = expit(degree)
+        loss_grad = -A.transpose() * (y * sigmas) / A.shape[0]
+    else:
+        degree = -y * (A.dot(x))
+        sigmas = expit(degree)
+        loss_grad = -A.T.dot(y * sigmas) / A.shape[0]
+    assert len(loss_grad) == len(x)
+    return loss_grad + mu * x
 def logreg_grad_plus_lasso(x, args):
     return logreg_grad(x, args) + args[4] * np.sign(x)
 
@@ -64,3 +83,6 @@ def r(x, l1):
 
 def F(x, args):
     return logreg_loss(x, args) + r(x, args[4])
+
+def prox_R(x, lamb):
+    return np.sign(x) * np.maximum(np.abs(x)- lamb, 0)
