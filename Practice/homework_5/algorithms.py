@@ -355,55 +355,59 @@ def FISTA(filename, x_init, A, y, L,
     return res
 
 
-def prox_gd(filename, x_init, A, y, gamma, 
-         l2=0, sparse=True, l1=0, S=1000, max_t=np.inf,
-         save_info_period=10, x_star=None, f_star=None):
+def prox_gd(filename, x_init, A, y, gamma,
+            l2=0, sparse=True, l1=0, S=1000, max_t=np.inf,
+            save_info_period=10, x_star=None, f_star=None):
     m, n = A.shape
-    assert(len(x_init) == n)
-    assert(len(y) == m)
+    assert (len(x_init) == n)
+    assert (len(y) == m)
     if x_star is None:
         x_star = np.zeros(n)
     if f_star is None:
         f_star = 0
-    ref_point = np.array(x_star) #если знаем решение, то ref_point поможет вычислять расстояние до него
+    ref_point = np.array(x_star)  # если знаем решение, то ref_point поможет вычислять расстояние до него
     x = np.array(x_init)
-    
-    #эти массивы мы будем сохранять в файл
+
+    # эти массивы мы будем сохранять в файл
     its = np.array([0])
     tim = np.array([0.0])
     data_passes = np.array([0.0])
     func_val = np.array([F(x, [A, y, l2, sparse, l1])])
     sq_distances = np.array([norm(x - ref_point) ** 2])
-    
+
     t_start = time.time()
     num_of_data_passes = 0.0
-   
-    #метод
+
+    # метод
+    w = x
     for it in range(S):
-        
-        #ваш код здесь
-        
+
+        grad_w = logreg_grad(w, args=[A, y, l2, sparse])
+        x = prox_R(x - gamma * grad_w, gamma * l1)
+
         if ((it + 1) % save_info_period == 0):
             its = np.append(its, it + 1)
             tim = np.append(tim, time.time() - t_start)
             data_passes = np.append(data_passes, num_of_data_passes)
-            func_val = np.append(func_val, F(x, [A, y, l2, sparse, l1])-f_star)
+            func_val = np.append(func_val, F(x, [A, y, l2, sparse, l1]) - f_star)
             sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
         if tim[-1] > max_t:
             break
-    
+        w = deepcopy(x)
+
     if ((it + 1) % save_info_period != 0):
         its = np.append(its, it + 1)
         tim = np.append(tim, time.time() - t_start)
         data_passes = np.append(data_passes, num_of_data_passes)
-        func_val = np.append(func_val, F(x, [A, y, l2, sparse, l1])-f_star)
+        func_val = np.append(func_val, F(x, [A, y, l2, sparse, l1]) - f_star)
         sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
-    
-    #сохранение результатов в файл
-    res = {'last_iter':x, 'func_vals':func_val, 'iters':its, 'time':tim, 'data_passes':data_passes,
-           'squared_distances':sq_distances}
-    
-    with open("dump/"+filename+"_prox-GD_gamma_"+str(gamma)+"_l2_"+str(l2)+"_l1_"+str(l1)+"_num_of_epochs_"+str(S)+".txt", 'wb') as file:
+
+    # сохранение результатов в файл
+    res = {'last_iter': x, 'func_vals': func_val, 'iters': its, 'time': tim, 'data_passes': data_passes,
+           'squared_distances': sq_distances}
+
+    with open("dump/" + filename + "_prox-GD_gamma_" + str(gamma) + "_l2_" + str(l2) + "_l1_" + str(
+            l1) + "_num_of_epochs_" + str(S) + ".txt", 'wb') as file:
         pickle.dump(res, file)
     return res
 
