@@ -275,8 +275,8 @@ def gd(filename, x_init, A, y, gamma,
    
     #метод
     for it in range(S):
-        grad_w = logreg_grad(x, args=[A, y, l2, sparse]) + l1*x
-        x -= gamma * grad_w
+        grad_w = logreg_grad_plus_lasso(x, args=[A, y, l2, sparse, l1])
+        x = x - gamma * grad_w
         
 
         
@@ -288,7 +288,7 @@ def gd(filename, x_init, A, y, gamma,
             sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
         if tim[-1] > max_t:
             break
-        x = deepcopy(xk1)
+
     
     if ((it + 1) % save_info_period != 0):
         its = np.append(its, it + 1)
