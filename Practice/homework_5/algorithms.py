@@ -275,8 +275,10 @@ def gd(filename, x_init, A, y, gamma,
    
     #метод
     for it in range(S):
+        grad_w = logreg_grad(x, args=[A, y, l2, sparse]) + l1*x
+        x -= gamma * grad_w
         
-        #ваш код здесь (возможно, ещё где-то придётся вставить код)
+
         
         if ((it + 1) % save_info_period == 0):
             its = np.append(its, it + 1)
@@ -286,6 +288,7 @@ def gd(filename, x_init, A, y, gamma,
             sq_distances = np.append(sq_distances, norm(x - ref_point) ** 2)
         if tim[-1] > max_t:
             break
+        x = deepcopy(xk1)
     
     if ((it + 1) % save_info_period != 0):
         its = np.append(its, it + 1)
@@ -312,8 +315,8 @@ def FISTA(filename, x_init, A, y, L,
     if f_star is None:
         f_star = 0
     ref_point = np.array(x_star) #если знаем решение, то ref_point поможет вычислять расстояние до него
-    
-    
+    x = np.array(x_init)
+    xk = x
     #эти массивы мы будем сохранять в файл
     its = np.array([0])
     tim = np.array([0.0])
@@ -324,10 +327,13 @@ def FISTA(filename, x_init, A, y, L,
     t_start = time.time()
     num_of_data_passes = 0.0
     
-   
+    yk = x
+    k = L / mu
     #метод
     for it in range(S):
-        
+        grad_w = logreg_grad(yk, args=[A, y, mu, sparse])
+        xk1 = prox_R(yk - (1/L) * grad_w, l1/L)
+        yk = xk1 + ((np.sqrt(k)-1) / (np.sqrt(k)+1))*(xk1 - xk)
         #ваш код здесь (возможно, ещё где-то придётся вставить код)
         
         if ((it + 1) % save_info_period == 0):
@@ -338,15 +344,15 @@ def FISTA(filename, x_init, A, y, L,
             sq_distances = np.append(sq_distances, norm(xk1 - ref_point) ** 2)
         if tim[-1] > max_t:
             break
-    
+
+        xk = (xk1)
+
     if ((it + 1) % save_info_period != 0):
         its = np.append(its, it + 1)
         tim = np.append(tim, time.time() - t_start)
         data_passes = np.append(data_passes, num_of_data_passes)
-        func_val = np.append(func_val, F(xk1, [A, y, mu, sparse, l1])-f_star)
+        func_val = np.append(func_val, F(xk1, [A, y, mu, sparse, l1]) - f_star)
         sq_distances = np.append(sq_distances, norm(xk1 - ref_point) ** 2)
-    
-    #сохранение результатов в файл
     res = {'last_iter':xk, 'func_vals':func_val, 'iters':its, 'time':tim, 'data_passes':data_passes,
            'squared_distances':sq_distances}
     
