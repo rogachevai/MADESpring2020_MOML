@@ -42,7 +42,22 @@ def slcm_ls(x_init, A, b, L, eta, S=50, max_t=np.inf,
     indices_counter = 0
 
     # метод
+
     for it in range(int(S * m * 1.0 / batch_size)):
+
+        if indices_counter == indices_size:
+            indices_counter = 0
+            indices = randint.rvs(low=0, high=m, size=indices_size)
+        batch_ind = indices[indices_counter:(indices_counter + batch_size)]
+        indices_counter += batch_size
+
+        a = (it + 2) / (2 * L * eta * eta)
+        t = 2 / (it + 2)
+        x = t * z + (1 - t) * y
+        g = least_squares_grad(x, args=[A[batch_ind], b[batch_ind]])
+        y = x - (1 / (L * eta)) * g
+        z = z - a * g
+        num_of_data_passes += 1
 
         # ваш код здесь (возможно, ещё где-то придётся вставить код)
 
@@ -110,7 +125,9 @@ def sgd_star_ls(x_init, A, b, gamma, S=50, max_t=np.inf,
         indices_counter += batch_size
 
         g_k = least_squares_grad(x, args=[A[batch_ind], b[batch_ind]]) - least_squares_grad(x_star, args=[A[batch_ind],
-                                                                                                          b[batch_ind]]) + least_squares_grad(x_star, args=[A, b])
+                                                                                                          b[
+                                                                                                              batch_ind]]) + least_squares_grad(
+            x_star, args=[A, b])
         x = x - gamma * g_k
 
         num_of_data_passes += 2.0 * batch_size / m
