@@ -112,6 +112,11 @@ class Newton(object):
         self.line_search_tool = get_line_search_tool(line_search_options)
         self.hist = defaultdict(list)
         self.x_0 = x_0
+        if self.line_search_tool._method == 'Constant':
+            self.alpha_0 = self.line_search_tool.c
+        else:
+            self.alpha_0 = 1.
+
 
     def add_record_to_history_(self):
         now = datetime.now()
@@ -144,7 +149,7 @@ class Newton(object):
                 message = "success"
                 break
             d = get_d(self.x_k, self.grad_k, self.oracle)
-            alpha = self.line_search_tool.line_search(self.oracle, self.x_k, d)
+            alpha = self.line_search_tool.line_search(self.oracle, self.x_k, d,self.alpha_0)
             self.x_k = self.x_k + d * alpha
         self.hist['x_star'] = self.x_k.copy()
 

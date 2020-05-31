@@ -1,5 +1,6 @@
 import numpy as np
 import scipy
+from scipy.special import expit
 
 class BaseSmoothOracle(object):
     """
@@ -16,7 +17,7 @@ class BaseSmoothOracle(object):
         Computes the gradient at point x.
         """
         raise NotImplementedError('Grad oracle is not implemented.')
-    
+
     def func_directional(self, x, d, alpha):
         """
         Computes phi(alpha) = f(x + alpha*d).
@@ -61,7 +62,7 @@ class LogRegL2Oracle(BaseSmoothOracle):
         diagonal = np.multiply(self.b**2, sigmas)
         diagonal = np.multiply(diagonal, 1 - sigmas)
         return np.array(1 / m * self.matmat_ATsA(diagonal) + self.regcoef * np.eye(n))
-    
+
     def hess_mat_prod(self, x, S):
         m = self.b.shape[0]
         n = x.size
